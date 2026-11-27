@@ -1,10 +1,10 @@
-# Inventory Tweaks Remaked — Fabric 26.3
+# Inventory Tweaks Remaked — NeoForge 26.3
 
-A faithful remake of the classic **Inventory Tweaks** for Minecraft 26.3 on Fabric.
+A faithful remake of the classic **Inventory Tweaks** for Minecraft 26.3 on NeoForge.
 Chest and inventory sorting, container buttons, click shortcuts, auto-refill and fully editable sorting rules — rebuilt for modern Minecraft.
 
 ![Minecraft](https://img.shields.io/badge/Minecraft-26.3-brightgreen)
-![Loader](https://img.shields.io/badge/Loader-Fabric-blue)
+![Loader](https://img.shields.io/badge/Loader-NeoForge-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## Features
@@ -24,15 +24,15 @@ Chest and inventory sorting, container buttons, click shortcuts, auto-refill and
 | | |
 |---|---|
 | Minecraft | 26.3 |
-| Loader | Fabric Loader 0.17.2 or newer |
+| Loader | NeoForge 26.3.0.117 or newer |
 | Java | 25 |
 | Side | Client only |
-| Dependencies | Fabric API (matching 26.3) and Fabric Loader |
+| Dependencies | NeoForge only (no extra libraries) |
 
 ## Installation
 
-1. Install Fabric for Minecraft 26.3 and start the game once so the loader folders exist.
-2. Drop `inventorytweaksremaked-fabric-26.3-1.0.0.jar` into the `mods` folder of your instance.
+1. Install NeoForge for Minecraft 26.3 and start the game once so the loader folders exist.
+2. Drop `inventorytweaksremaked-neoforge-26.3-1.1.0.jar` into the `mods` folder of your instance.
 3. Launch the game and open your inventory — a **“…”** button appears at the right end of the title row. If it is there, the mod loaded correctly.
 
 The first launch creates `config/InvTweaks/` with the default configuration. Nothing is printed in chat; only one line is written to `logs/latest.log`.
@@ -98,11 +98,11 @@ Custom categories go directly under `<stuff>` in `InvTweaksTree.txt`; the elemen
 ## Building from source
 
 ```bash
-# JDK 25
-./gradlew remapJar
+# JDK 21 (the build uses a Java 25 toolchain)
+./gradlew build
 ```
 
-The finished jar is written to `build/libs/inventorytweaksremaked-fabric-26.3-<version>.jar`.
+The finished jar is written to `build/libs/inventorytweaksremaked-neoforge-26.3-<version>.jar`.
 
 ## License and credits
 
@@ -114,9 +114,9 @@ Released under the **MIT License**. Based on the original *Inventory Tweaks* (1.
 
 Inventory Tweaks Remaked 是经典模组 Inventory Tweaks（1.12.2）的现代移植版，支持箱子与背包排序、容器按钮、点击快捷操作、自动补货，以及可完全自定义的排序规则与物品树。
 
-- 版本：Minecraft 26.3 / Fabric
-- 依赖：Fabric API (matching 26.3) and Fabric Loader
-- 安装：把 `inventorytweaksremaked-fabric-26.3-1.0.0.jar` 放进 `mods` 文件夹，进游戏打开背包，标题行右侧出现 **“…”** 按钮即加载成功
+- 版本：Minecraft 26.3 / NeoForge
+- 依赖：NeoForge only (no extra libraries)
+- 安装：把 `inventorytweaksremaked-neoforge-26.3-1.1.0.jar` 放进 `mods` 文件夹，进游戏打开背包，标题行右侧出现 **“…”** 按钮即加载成功
 - 文档：<https://huan25748.github.io/Inventory-Tweaks-Remaked/zh.html>
 
-> The 26.x Fabric build uses Loom 1.20 with an identity mapping file, since Minecraft 26.x ships named classes without intermediary mappings.
+> Building on 26.x requires Gradle 9.2+ and a JDK 25 installation; if Gradle cannot find it, pass `-Porg.gradle.java.installations.paths=<your jdk-25 path>`.
