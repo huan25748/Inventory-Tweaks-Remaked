@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "inventorytweaksremaked",
+  "version": "${version}",
+  "name": "Inventory Tweaks Remaked",
+  "description": "A faithful port of the classic Inventory Tweaks: chest and inventory sorting, container buttons, item transfer, click shortcuts, auto-refill and editable sorting rules.",
+  "authors": [
+    "Jimeo Wan",
+    "kobata",
+    "IMarvinTPA",
+    "33460",
+    "huan25748"
+  ],
+  "contact": {
+    "homepage": "https://huan25748.github.io/Inventory-Tweaks-Remaked/"
+  },
+  "license": "MIT",
+  "icon": "assets/inventorytweaksremaked/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "com.inventorytweaks.remaked.InvTweaksMod"
+    ],
+    "client": [
+      "com.inventorytweaks.remaked.InvTweaksFabricClient"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "inventorytweaksremaked.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.0",
+    "minecraft": "26.3",
+    "java": ">=17",
+    "fabric-api": "*"
+  }
+}
