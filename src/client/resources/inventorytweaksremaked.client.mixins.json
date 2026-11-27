@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.inventorytweaks.remaked.mixin.client",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "ClientPacketListenerMixin",
+    "ScreenInvoker",
+    "ContainerScreenAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
