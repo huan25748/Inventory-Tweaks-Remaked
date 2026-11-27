@@ -1,10 +1,10 @@
-# Inventory Tweaks Remaked — Forge 1.20.1
+# Inventory Tweaks Remaked — Forge / NeoForge 1.20.1
 
-A faithful remake of the classic **Inventory Tweaks** for Minecraft 1.20.1 on Forge.
+A faithful remake of the classic **Inventory Tweaks** for Minecraft 1.20.1 on Forge and NeoForge.
 Chest and inventory sorting, container buttons, click shortcuts, auto-refill and fully editable sorting rules — rebuilt for modern Minecraft.
 
 ![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-brightgreen)
-![Loader](https://img.shields.io/badge/Loader-Forge-blue)
+![Loader](https://img.shields.io/badge/Loader-Forge%20%2F%20NeoForge-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## Features
@@ -24,14 +24,14 @@ Chest and inventory sorting, container buttons, click shortcuts, auto-refill and
 | | |
 |---|---|
 | Minecraft | 1.20.1 |
-| Loader | Forge 47.4.28 or newer (47.x) |
+| Loader | Forge 47.4.28+ (47.x) or NeoForge 47.1.x |
 | Java | 17 |
 | Side | Client only |
-| Dependencies | Forge only (no extra libraries) |
+| Dependencies | None (works with Forge or NeoForge 1.20.1) |
 
 ## Installation
 
-1. Install Forge for Minecraft 1.20.1 and start the game once so the loader folders exist.
+1. Install Forge 47.x (or NeoForge 47.1.x) for Minecraft 1.20.1 and start the game once so the loader folders exist.
 2. Drop `inventorytweaksremaked-forge-1.20.1-1.1.0.jar` into the `mods` folder of your instance.
 3. Launch the game and open your inventory — a **“…”** button appears at the right end of the title row. If it is there, the mod loaded correctly.
 
@@ -104,6 +104,10 @@ Custom categories go directly under `<stuff>` in `InvTweaksTree.txt`; the elemen
 
 The finished jar is written to `build/libs/inventorytweaksremaked-forge-1.20.1-<version>.jar`.
 
+## NeoForge compatibility
+
+The same jar also runs on **NeoForge 1.20.1 (47.1.x)** — NeoForge 1.20.1 is a Forge 47 fork and reads the regular Forge metadata, so no separate build is needed. Install it the same way into the `mods` folder of either loader.
+
 ## License and credits
 
 Released under the **MIT License**. Based on the original *Inventory Tweaks* (1.12.2) by **Jimeo Wan** and **kobata**, with thanks to the Inventory Tweaks contributors. Ported and maintained by **33460** and **huan25748**.
@@ -114,7 +118,7 @@ Released under the **MIT License**. Based on the original *Inventory Tweaks* (1.
 
 Inventory Tweaks Remaked 是经典模组 Inventory Tweaks（1.12.2）的现代移植版，支持箱子与背包排序、容器按钮、点击快捷操作、自动补货，以及可完全自定义的排序规则与物品树。
 
-- 版本：Minecraft 1.20.1 / Forge
+- 版本：Minecraft 1.20.1 / Forge 47.x 或 NeoForge 47.1.x（同一个 jar 通用）
 - 依赖：Forge only (no extra libraries)
 - 安装：把 `inventorytweaksremaked-forge-1.20.1-1.1.0.jar` 放进 `mods` 文件夹，进游戏打开背包，标题行右侧出现 **“…”** 按钮即加载成功
 - 文档：<https://huan25748.github.io/Inventory-Tweaks-Remaked/zh.html>
