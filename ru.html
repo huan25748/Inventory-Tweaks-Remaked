@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventory Tweaks Remaked — Документация</title>
+<style>
+:root{
+  --bg:#ffffff; --panel:#ffffff; --sidebar:#fbfbfd; --ink:#16181d; --muted:#5b6070;
+  --line:#e3e6ec; --line-soft:#eef0f4; --link:#0b63c5; --link-hover:#0a4f9e;
+  --code-bg:#f5f6f8; --code-border:#e1e4ea; --tip-bg:#eaf4ff; --tip-line:#a9d2ff;
+  --warn-bg:#fff6e8; --warn-line:#f0c67a; --kbd-bg:#fff; --kbd-line:#c9ced8;
+  --active-bg:#e9f2ff; --active-ink:#0b63c5; --header-h:56px; --maxw:1600px;
+}
+html[data-theme="dark"]{
+  --bg:#14161a; --panel:#14161a; --sidebar:#171a1f; --ink:#e6e8ee; --muted:#9aa1b0;
+  --line:#2a2f38; --line-soft:#22262e; --link:#7fb6ff; --link-hover:#a5ccff;
+  --code-bg:#1b1f26; --code-border:#2a2f38; --tip-bg:#152435; --tip-line:#2c5d91;
+  --warn-bg:#2a2113; --warn-line:#7a5a20; --kbd-bg:#1b1f26; --kbd-line:#3a414d;
+  --active-bg:#1a2635; --active-ink:#8fc1ff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased}
+a{color:var(--link);text-decoration:none}
+a:hover{color:var(--link-hover);text-decoration:underline}
+code{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.86em;
+  background:var(--code-bg);border:1px solid var(--code-border);border-radius:4px;padding:.1em .35em}
+pre{margin:16px 0;background:var(--code-bg);border:1px solid var(--code-border);border-radius:8px;
+  padding:16px 18px;overflow:auto;line-height:1.6}
+pre code{background:none;border:0;padding:0;font-size:13px;white-space:pre}
+
+/* slim scrollbars */
+*{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line);border:3px solid var(--bg);border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:var(--kbd-line)}
+html[data-theme="dark"] ::-webkit-scrollbar-thumb{border-color:var(--bg)}
+
+.tip .tipbody{display:block}
+.langswitch{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px}
+.langswitch a{padding:3px 9px;color:var(--muted);line-height:1.6}
+.langswitch a:hover{color:var(--ink);text-decoration:none;background:var(--line-soft)}
+.langswitch a.active{background:var(--code-bg);color:var(--ink);font-weight:600}
+.search{position:relative}
+.search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;display:none;z-index:80;
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:auto;max-height:60vh;
+  box-shadow:0 10px 30px rgba(20,25,40,.12);padding:4px}
+.search-results a{display:block;padding:7px 10px;border-radius:6px;color:var(--ink)}
+.search-results a:hover,.search-results a.active{background:var(--code-bg);text-decoration:none}
+.search-results .sr-title{display:block;font-size:13px;font-weight:600}
+.search-results .sr-snippet{display:block;font-size:12px;line-height:1.5;color:var(--muted);margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.search-results mark{background:#ffe9a8;color:inherit;border-radius:2px;padding:0 1px}
+html[data-theme="dark"] .search-results mark{background:#6b5a1f;color:#fff}
+.search-results .sr-langs{margin-top:6px;display:block;font-size:12px}
+.search-results .sr-lang{display:inline-block;margin-right:8px;color:var(--link)}
+.search-results .sr-empty{line-height:1.6}
+.search-results .sr-empty{padding:10px 12px;font-size:13px;color:var(--muted)}
+kbd{font-family:inherit;font-size:12.5px;background:var(--kbd-bg);border:1px solid var(--kbd-line);
+  border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:var(--ink)}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:50;height:var(--header-h);background:var(--panel);
+  border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:0 20px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;color:var(--ink);white-space:nowrap}
+.brand svg{display:block}
+.brand span{font-size:15px}
+.search{flex:1;max-width:440px;margin:0 auto;display:flex;align-items:center;gap:8px;
+  background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--muted)}
+.search input{flex:1;border:0;background:transparent;color:var(--ink);font:inherit;outline:none;min-width:0}
+.search kbd{font-size:11px;padding:0 5px}
+.topnav{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--muted);white-space:nowrap}
+.topnav a{color:var(--muted)}
+.topnav a:hover{color:var(--ink);text-decoration:none}
+.pill{border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-size:13px;color:var(--ink);background:var(--panel)}
+.iconbtn{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:6px;
+  width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.iconbtn:hover{color:var(--ink)}
+
+.layout{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:216px minmax(0,1fr) 252px;gap:0}
+
+/* sidebar */
+.sidebar{background:var(--sidebar);border-right:1px solid var(--line);padding:18px 10px 60px;
+  position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow:auto}
+.sidebar .eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  margin:4px 10px 10px;font-weight:600}
+.sidebar details{margin:2px 0}
+.sidebar summary{list-style:none;display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;padding:7px 10px;border-radius:6px;font-size:14px;font-weight:600;color:var(--ink)}
+.sidebar summary::-webkit-details-marker{display:none}
+.sidebar summary:hover{background:var(--line-soft)}
+.sidebar summary .chev{transition:transform .15s ease;color:#9aa1b0;flex:none}
+.sidebar details[open] summary .chev{transform:rotate(90deg);color:#7c8394}
+.sidebar ul{list-style:none;margin:2px 0 8px;padding:0}
+.sidebar li a{display:block;padding:5px 10px 5px 24px;border-radius:6px;color:var(--muted);font-size:14px}
+.sidebar li a:hover{background:var(--line-soft);color:var(--ink);text-decoration:none}
+.sidebar li a.active{background:var(--active-bg);color:var(--active-ink);font-weight:600}
+
+/* content */
+.content{min-width:0;padding:34px 52px 120px}
+.crumbs{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-bottom:18px}
+.crumbs .pill{font-size:12px;padding:2px 7px}
+h1{font-size:38px;line-height:1.2;margin:0 0 14px;letter-spacing:-.01em}
+.lead{font-size:15px;color:var(--muted);font-style:italic;margin:0 0 26px}
+h2{font-size:22px;line-height:1.35;margin:42px 0 14px;padding-top:22px;border-top:1px solid var(--line-soft);
+  scroll-margin-top:80px}
+h2:first-of-type{border-top:0;margin-top:8px;padding-top:0}
+h3{font-size:16px;margin:26px 0 8px;scroll-margin-top:80px}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 16px;padding-left:22px}
+li{margin:3px 0}
+.tip{background:var(--tip-bg);border:1px solid var(--tip-line);border-radius:8px;padding:12px 16px;margin:18px 0}
+.tip .label{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--link);display:block;margin-bottom:4px}
+.warn{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:8px;padding:12px 16px;margin:18px 0}
+.warn .label{font-size:12px;font-weight:700;letter-spacing:.06em;color:#9a6a12;display:block;margin-bottom:4px}
+table{border-collapse:collapse;width:100%;margin:14px 0 18px;font-size:14px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600;color:var(--ink);white-space:nowrap}
+.icocell{width:52px;text-align:center}
+svg.ico{border:1px solid var(--line);border-radius:4px;image-rendering:pixelated;display:inline-block;vertical-align:middle}
+
+/* right toc */
+.toc{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow:auto;
+  padding:34px 10px 60px 18px;font-size:13px}
+.toc h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.toc ul{list-style:none;margin:0 0 26px;padding:0;border-left:1px solid var(--line)}
+.toc li a{display:block;padding:4px 0 4px 12px;color:var(--muted);margin-left:-1px;border-left:2px solid transparent}
+.toc li a:hover{color:var(--ink);text-decoration:none}
+.toc li a.active{color:var(--link);border-left-color:var(--link);font-weight:600}
+.toc li.sub a{padding-left:24px;font-size:12.5px}
+.meta{border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:12.5px;line-height:1.8}
+.meta a{display:block}
+
+.footer{max-width:var(--maxw);margin:0 auto;border-top:1px solid var(--line);
+  padding:18px 46px 40px;color:var(--muted);font-size:13px}
+
+@media (max-width:1240px){
+  .layout{grid-template-columns:204px minmax(0,1fr)}
+  .toc{display:none}
+}
+@media (max-width:840px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .content{padding:26px 20px 80px}
+  h1{font-size:30px}
+  .search{display:none}
+  .topnav{gap:12px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#top" aria-label="Inventory Tweaks Remaked">
+    <span>Inventory Tweaks</span>
+  </a>
+  <div class="search"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.6 10.6 14 14"/></svg>
+    <input id="q" type="search" placeholder="Поиск по документации" aria-label="Поиск по документации">
+    <kbd>Ctrl K</kbd>
+  </div>
+  <nav class="topnav">
+    <a href="#start">Начало работы</a>
+    <a href="#rules">Правила сортировки</a>
+    <a href="https://github.com/huan25748/Inventory-Tweaks-Remaked" target="_blank" rel="noopener">Код</a>
+    <span class="langswitch"><a href="zh.html">中文</a><a href="index.html">EN</a><a href="ja.html">日本語</a><a href="fr.html">FR</a><a href="ru.html" class="active">RU</a></span>
+    <button class="iconbtn" id="theme" title="Переключить тёмную тему" aria-label="Переключить тёмную тему">◐</button>
+  </nav>
+</header>
+
+<div class="layout" id="top">
+  <aside class="sidebar">
+    <div class="eyebrow">ДОКУМЕНТАЦИЯ</div>
+
+    <details open>
+      <summary><span class="lbl">Начало работы</span> <svg class="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></summary>
+      <ul>
+        <li><a href="#start">Быстрый старт</a></li>
+        <li><a href="#install">Установка</a></li>
+      </ul>
+    </details>
+
+    <details open>
+      <summary><span class="lbl">Сортировка</span> <svg class="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></summary>
+      <ul>
+        <li><a href="#sorting">Основы сортировки</a></li>
+        <li><a href="#buttons">Кнопки контейнеров</a></li>
+        <li><a href="#keys">Горячие клавиши</a></li>
+        <li><a href="#refill">Автопополнение</a></li>
+      </ul>
+    </details>
+
+    <details open>
+      <summary><span class="lbl">Правила и дерево предметов</span> <svg class="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></summary>
+      <ul>
+        <li><a href="#files">Файлы конфигурации</a></li>
+        <li><a href="#rules">Правила сортировки</a></li>
+        <li><a href="#rules-targets">Области</a></li>
+        <li><a href="#rules-modifiers">Модификаторы</a></li>
+        <li><a href="#rules-keywords">Ключевые слова</a></li>
+        <li><a href="#rules-locked">Блокировка и заморозка</a></li>
+        <li><a href="#rules-configs">Несколько профилей</a></li>
+        <li><a href="#tree">Дерево предметов</a></li>
+        <li><a href="#tree-custom">Свои категории</a></li>
+        <li><a href="#tree-damage">ID и варианты</a></li>
+      </ul>
+    </details>
+
+    <details>
+      <summary><span class="lbl">Прочее</span> <svg class="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></summary>
+      <ul>
+        <li><a href="#compat">Совместимость контейнеров</a></li>
+        <li><a href="#faq">Вопросы и ответы</a></li>
+      </ul>
+    </details>
+  </aside>
+
+  <main class="content">
+    <div class="crumbs">
+      <span class="pill">Документация</span>
+      <span>/</span>
+      <span>Inventory Tweaks Remaked</span>
+    </div>
+
+    <h1>Inventory Tweaks Remaked</h1>
+    <p class="lead">Сортировка инвентаря, сортировка контейнеров, автопополнение и дерево предметов — современный порт Inventory Tweaks для Minecraft 1.12.2.</p>
+
+    <p>Поместите jar для своей версии игры в папку <code>mods</code>. Это <strong>клиентский мод</strong>: серверу он не нужен, лишние пакеты не отправляются.</p>
+
+    <div class="tip">
+      <span class="label">СОВЕТ</span>
+      <span class="tipbody">При первом запуске в <code>config/InvTweaks/</code> создаётся конфигурация по умолчанию. В чате ничего не появляется — только одна строка в <code>logs/latest.log</code>.</span>
+    </div>
+
+    <h2 id="start">Быстрый старт</h2>
+    <p>После установки откройте инвентарь: в правом верхнем углу заголовка появится кнопка <strong>«…»</strong>. Если она есть, мод загрузился. Нажмите её, чтобы открыть настройки.</p>
+    <ul>
+      <li><kbd>R</kbd> — сортирует область под курсором. Инвентарь открывать не обязательно.</li>
+      <li>Средняя кнопка мыши — сортировка; в сундуке каждое нажатие переключает три алгоритма.</li>
+      <li>Кнопки справа в строке заголовка контейнера: обычная сортировка, вертикальная, горизонтальная, настройки и перенос предметов.</li>
+      <li><kbd>Ctrl</kbd> / <kbd>Shift</kbd> / <kbd>Пробел</kbd> / <kbd>Alt</kbd> + ЛКМ — перенос или выбрасывание предметов.</li>
+    </ul>
+    <p>Правила, профили и категории хранятся в <code>config/InvTweaks/</code>. Перезапуск не нужен: сохраните файл, вернитесь в игру и отсортируйте ещё раз.</p>
+
+    <h2 id="install">Установка</h2>
+    <p>Для каждого загрузчика и версии игры собирается отдельный jar. Устанавливайте только файл, точно соответствующий вашему профилю.</p>
+    <table>
+      <tr><th>Загрузчик</th><th>Версия игры</th><th>Имя jar</th></tr>
+      <tr><td>Fabric</td><td>1.20.1</td><td><code>inventorytweaksremaked-fabric-1.20.1-1.0.0.jar</code></td></tr>
+      <tr><td>Fabric</td><td>1.21 / 1.21.1 / 1.21.3 / 1.21.4 / 1.21.5 / 1.21.8 / 1.21.10 / 1.21.11</td><td><code>inventorytweaksremaked-fabric-&lt;версия&gt;-1.0.0.jar</code></td></tr>
+      <tr><td>Fabric</td><td>26.1.2 / 26.2 / 26.3</td><td><code>inventorytweaksremaked-fabric-&lt;версия&gt;-1.0.0.jar</code></td></tr>
+      <tr><td>Forge 47.x</td><td>1.20.1</td><td><code>inventorytweaksremaked-forge-1.20.1-1.1.0.jar</code></td></tr>
+      <tr><td>NeoForge 21.x</td><td>1.21 / 1.21.1 / 1.21.3 / 1.21.4 / 1.21.5 / 1.21.8 / 1.21.10 / 1.21.11</td><td><code>inventorytweaksremaked-neoforge-&lt;версия&gt;-1.1.1.jar</code></td></tr>
+      <tr><td>NeoForge 26.x</td><td>26.1.2 / 26.2 / 26.3 (нужна Java 25)</td><td><code>inventorytweaksremaked-neoforge-&lt;версия&gt;-1.1.0.jar</code></td></tr>
+    </table>
+    <p>Для Fabric нужны соответствующие Fabric Loader и Fabric API; версии Forge и NeoForge дополнительных зависимостей не требуют.</p>
+
+    <h2 id="sorting">Основы сортировки</h2>
+    <h3>Клавиша R следует за курсором</h3>
+    <p>Область сортировки зависит от <strong>положения курсора</strong>. Инвентарь открывать не нужно:</p>
+    <table>
+      <tr><th>Курсор над</th><th>Результат</th></tr>
+      <tr><td>Ячейками сундука (контейнера)</td><td>Сортируется только контейнер</td></tr>
+      <tr><td>Инвентарём / хотбаром</td><td>Сортируется только инвентарь</td></tr>
+      <tr><td>Сеткой крафта, кнопками, пустым местом</td><td>Контейнер и инвентарь сортируются вместе (только инвентарь, если контейнера нет)</td></tr>
+    </table>
+
+    <h3>Средняя кнопка мыши</h3>
+    <p>Средняя кнопка тоже определяет область по курсору. В сундуке нажатия переключают <strong>обычный → вертикальный → горизонтальный</strong>.</p>
+    <p>Особый случай: если курсор над <strong>ячейкой крафта</strong>, сортировки нет — вместо неё стак <strong>делится поровну</strong>, например чтобы распределить древесину между двумя ячейками при крафте палок.</p>
+
+    <h3>Алгоритмы сортировки</h3>
+    <table>
+      <tr><th>Алгоритм</th><th>Порядок заполнения</th><th>Когда удобен</th></tr>
+      <tr><td>Обычный</td><td>Предмет за предметом по порядку дерева</td><td>Повседневный инвентарь и сундуки</td></tr>
+      <tr><td>Вертикальный (по столбцам)</td><td>Столбец за столбцом, сверху вниз</td><td>Группировка по столбцам</td></tr>
+      <tr><td>Горизонтальный (по строкам)</td><td>Строка за строкой, слева направо</td><td>Группировка по строкам</td></tr>
+    </table>
+
+    <h3>Творческий инвентарь</h3>
+    <p>В творческом режиме остаётся только кнопка настроек в правом конце строки заголовка; <kbd>R</kbd> и средняя кнопка никогда не сортируют творческий список.</p>
+
+    <h2 id="buttons">Кнопки контейнеров</h2>
+    <p>Иконки ниже повторяют реальную пиксельную графику 10×10 (увеличена до 30×30). При наведении примерно через 0,8 с появляется подсказка из таблицы.</p>
+    <table>
+      <tr><th>Иконка</th><th>Положение</th><th>Подсказка</th><th>Действие</th></tr>
+      <tr><td class="icocell"><svg class="ico" viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#6f6f6f"/><g fill="#e9e9e9"><rect x="3" y="3" width="4" height="1"/><rect x="5" y="4" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="3" y="6" width="4" height="1"/></g></svg></td><td>Крайний слева в ряду</td><td><code>Обычная сортировка</code></td><td>Сортирует контейнер текущим алгоритмом</td></tr>
+      <tr><td class="icocell"><svg class="ico" viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#6f6f6f"/><g fill="#e9e9e9"><rect x="3" y="3" width="1" height="4"/><rect x="6" y="3" width="1" height="4"/></g></svg></td><td>Середина ряда</td><td><code>По столбцам</code></td><td>Вертикально: по одному столбцу</td></tr>
+      <tr><td class="icocell"><svg class="ico" viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#6f6f6f"/><g fill="#e9e9e9"><rect x="3" y="3" width="4" height="1"/><rect x="3" y="6" width="4" height="1"/></g></svg></td><td>Середина ряда</td><td><code>По строкам</code></td><td>Горизонтально: по одной строке</td></tr>
+      <tr><td class="icocell"><svg class="ico" viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#6f6f6f"/><g fill="#e9e9e9"><rect x="3" y="6" width="1" height="1"/><rect x="5" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/></g></svg></td><td>Крайний справа в ряду</td><td><code>Настройки инвентаря</code></td><td>Открывает настройки Inventory Tweaks</td></tr>
+      <tr><td class="icocell"><svg class="ico" viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#6f6f6f"/><g fill="#e9e9e9"><rect x="4" y="2" width="1" height="1"/><rect x="3" y="3" width="3" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="6" y="4" width="1" height="1"/><rect x="4" y="5" width="1" height="2"/><rect x="4" y="6" width="4" height="1"/></g></svg></td><td>Конец строки инвентаря, левее</td><td><code>Перенести в контейнер</code></td><td>Клик: дополняет существующие стаки; Shift: всё, кроме хотбара; Alt+Shift: всё</td></tr>
+      <tr><td class="icocell"><svg class="ico" viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#6f6f6f"/><g fill="#e9e9e9"><rect x="4" y="3" width="4" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="3" y="6" width="3" height="1"/><rect x="4" y="7" width="1" height="1"/></g></svg></td><td>Конец строки инвентаря, правее</td><td><code>Перенести в инвентарь</code></td><td>Shift: забирает всё из контейнера</td></tr>
+    </table>
+    <div class="tip">
+      <span class="label">СОВЕТ</span>
+      <span class="tipbody">Кнопки «вертикально/горизонтально» появляются только при ширине контейнера до 9 ячеек. Если контейнер рисует свои кнопки (Sophisticated Backpacks и подобные), ряд сдвигается влево, чтобы не перекрываться.</span>
+    </div>
+
+    <h2 id="keys">Горячие клавиши</h2>
+    <p>Клавиши по умолчанию перечислены ниже. Их можно изменить через меню «…» в инвентаре или в <code>config/InvTweaks/InvTweaks.cfg</code>.</p>
+    <table>
+      <tr><th>Действие</th><th>Клавиша</th><th>Примечание</th></tr>
+      <tr><td>Сортировать область под курсором</td><td><kbd>R</kbd></td><td>Работает в игре без открытия инвентаря</td></tr>
+      <tr><td>Сортировка (смена алгоритма)</td><td>Средняя кнопка</td><td>Переключает обычный / вертикальный / горизонтальный</td></tr>
+      <tr><td>Перенести 1 предмет</td><td><kbd>Ctrl</kbd> + ЛКМ</td><td>Переносит один предмет из стака</td></tr>
+      <tr><td>Перенести все предметы того же типа</td><td><kbd>Ctrl + Shift</kbd> + ЛКМ</td><td>Переносит все стаки этого предмета</td></tr>
+      <tr><td>Перенести стак</td><td><kbd>Shift</kbd> + ЛКМ</td><td>Переносит стак целиком</td></tr>
+      <tr><td>Перенести всё</td><td><kbd>Пробел</kbd> + ЛКМ</td><td>Переносит все предметы области независимо от типа</td></tr>
+      <tr><td>В верхнюю область</td><td><kbd>↑</kbd> + ЛКМ</td><td>В верхнюю половину контейнера / инвентаря</td></tr>
+      <tr><td>В нижнюю область</td><td><kbd>↓</kbd> + ЛКМ</td><td>В нижнюю половину</td></tr>
+      <tr><td>Выбросить</td><td><kbd>Alt</kbd> + ЛКМ</td><td>Выбрасывает предмет на землю</td></tr>
+      <tr><td>В ячейку хотбара</td><td><kbd>1</kbd>–<kbd>9</kbd> + ЛКМ</td><td>Кладёт предмет сразу в эту ячейку</td></tr>
+      <tr><td>Сменить профиль</td><td><kbd>R</kbd> + <kbd>1</kbd>–<kbd>9</kbd></td><td>Номер соответствует порядку в файле правил</td></tr>
+      <tr><td>Перебрать профили</td><td>Держать <kbd>R</kbd> ~1 с</td><td>По очереди переключает профили</td></tr>
+    </table>
+    <div class="warn">
+      <span class="label">ВНИМАНИЕ</span>
+      <span class="tipbody">Смена профиля работает только если в файле правил задано <strong>два и более</strong> профиля; по умолчанию он один.</span>
+    </div>
+
+    <h2 id="refill">Автопополнение</h2>
+    <p>Когда вы съедаете предмет, ломаете инструмент или заканчиваете стак блоков, мод автоматически переносит подходящий предмет из инвентаря в текущую ячейку.</p>
+    <table>
+      <tr><th>Параметр</th><th>По умолчанию</th><th>Описание</th></tr>
+      <tr><td><code>enableAutoRefill</code></td><td>true</td><td>Общий выключатель</td></tr>
+      <tr><td><code>autoRefillBeforeBreak</code></td><td>false</td><td>Менять инструмент <em>до</em> полной поломки</td></tr>
+      <tr><td><code>autoRefillDamageThreshhold</code></td><td>5</td><td>Менять при остатке прочности ниже этого значения</td></tr>
+    </table>
+    <p>Какие предметы пополняются, задаёт строка <code>autorefill</code> в файле правил; ячейки <code>FROZEN</code> в автопополнении не участвуют.</p>
+
+    <h2 id="files">Файлы конфигурации</h2>
+    <p>Всё находится в <code>config/InvTweaks/</code>:</p>
+    <table>
+      <tr><th>Файл</th><th>Назначение</th></tr>
+      <tr><td><code>InvTweaks.cfg</code></td><td>Переключатели и клавиши (формат properties)</td></tr>
+      <tr><td><code>InvTweaksRules.txt</code></td><td>Правила сортировки и профили</td></tr>
+      <tr><td><code>InvTweaksTree.txt</code></td><td>Дерево категорий (содержимое XML)</td></tr>
+      <tr><td><code>trees/*.tree</code></td><td>Дополнительные фрагменты, объединяемые при запуске</td></tr>
+      <tr><td><code>InvTweaksCompatibility.xml</code></td><td>Необязательно: совместимость контейнеров</td></tr>
+    </table>
+    <div class="tip">
+      <span class="label">СОВЕТ</span>
+      <span class="tipbody">Файл правил можно открыть из игры: «…» → «Открыть файл правил сортировки…». Сохраните и отсортируйте ещё раз.</span>
+    </div>
+
+    <h2 id="rules">Правила сортировки (InvTweaksRules.txt)</h2>
+    <p>Каждая строка — одно условие из двух полей:</p>
+    <pre><code>&lt;область&gt; &lt;ключевое слово&gt;</code></pre>
+    <p><strong>Область</strong> — позиция в инвентаре (ячейка, строка, столбец или прямоугольник); <strong>ключевое слово</strong> берётся из дерева предметов. Например, <code>D5 pickaxe</code> кладёт лучшую кирку в 5-ю ячейку нижней строки (хотбара).</p>
+    <p>В файле по умолчанию уже есть <code>D LOCKED</code>: хотбар не заполняется автоматической сортировкой.</p>
+
+    <h3 id="rules-targets">Области</h3>
+    <p>Инвентарь нумеруется: 9 столбцов и 4 строки. Столбцы <code>1</code>–<code>9</code> слева направо, строки <code>a</code>–<code>d</code> сверху вниз (<code>d</code> — хотбар).</p>
+    <table>
+      <tr><th>Синтаксис</th><th>Значение</th></tr>
+      <tr><td><code>D1</code></td><td>Одна ячейка: строка D, столбец 1</td></tr>
+      <tr><td><code>D</code></td><td>Вся строка, слева направо</td></tr>
+      <tr><td><code>1</code></td><td>Весь столбец, по умолчанию снизу вверх</td></tr>
+      <tr><td><code>A5-C9</code></td><td>Прямоугольник от A5 до C9</td></tr>
+      <tr><td><code>A1-C3</code></td><td>Прямоугольник, другой порядок углов (другое направление заполнения)</td></tr>
+    </table>
+    <div class="tip">
+      <span class="label">СОВЕТ</span>
+      <span class="tipbody">Прямоугольник записывается как <code>A1-C3</code>, <code>C3-A1</code>, <code>A3-C1</code> или <code>C1-A3</code>. Это не одно и то же: первый угол задаёт точку начала заполнения.</span>
+    </div>
+
+    <h3 id="rules-modifiers">Модификаторы</h3>
+    <p>Добавляются в конец области и могут сочетаться:</p>
+    <table>
+      <tr><th>Модификатор</th><th>Значение</th></tr>
+      <tr><td><code>r</code></td><td>Обратный порядок: справа налево или сверху вниз</td></tr>
+      <tr><td><code>v</code></td><td>Сначала вертикально: сверху вниз, затем влево-вправо (для прямоугольников)</td></tr>
+    </table>
+    <p>Например, <code>Ar</code> заполняет строку 1 в обратном порядке, а <code>A1-C5v</code> — прямоугольник сначала по вертикали.</p>
+
+    <h3 id="rules-keywords">Ключевые слова</h3>
+    <p>Имена предметов и многие категории используются напрямую: <code>pickaxe</code>, <code>edibleFood</code>, <code>blocks</code>, <code>equipment</code> и другие. Полный список — содержимое файла дерева.</p>
+    <p>Регистр и пробелы не важны: <code>woodenSword</code>, <code>WOODSWORD</code> и <code>Wooden Sword</code> равнозначны.</p>
+
+    <h3 id="rules-locked">Блокировка и заморозка</h3>
+    <table>
+      <tr><th>Синтаксис</th><th>Эффект</th></tr>
+      <tr><td><code>&lt;область&gt; LOCKED</code></td><td>Другие предметы туда не попадут; более точная область отменяет это (<code>D LOCKED</code> перекрывается <code>D1 torch</code>)</td></tr>
+      <tr><td><code>&lt;область&gt; FROZEN</code></td><td>Предметы в этих ячейках не двигаются ни при сортировке, ни при автопополнении</td></tr>
+      <tr><td><code>autorefill &lt;ключевое слово&gt;</code></td><td>Пополнять только подходящие предметы (если не указано — все)</td></tr>
+    </table>
+
+    <h3 id="rules-configs">Несколько профилей</h3>
+    <p>Профиль начинается со слова и двоеточия в отдельной строке; следующие правила относятся к нему:</p>
+    <pre><code>Mining:
+D1 pickaxe
+D2 torch
+
+Fighting:
+D1 sword
+D5 edibleFood</code></pre>
+    <p>Держите <kbd>R</kbd> около секунды для перебора или нажмите <kbd>1</kbd>–<kbd>9</kbd> + <kbd>R</kbd>, чтобы перейти к профилю по номеру (первый — 1).</p>
+
+    <h3>Официальный пример</h3>
+    <p>Правила, которыми пользуется автор оригинала:</p>
+    <pre><code>Default:
+
+D1 pickaxe
+D2 axe
+D3 shovel
+D4 sword
+D5 edibleFood
+D9 torch
+
+A1-C5v stuff
+A9-C6v blocks</code></pre>
+
+    <h3>Полный пример</h3>
+    <pre><code># строки, начинающиеся с #, — комментарии
+[Default]
+# оружие в столбец 1
+1 weapon
+# блоки в строку 1
+a block
+# еда в одну ячейку
+a1 food
+# заблокировать две ячейки справа снизу
+b8-c9 locked
+# пополнять только инструменты
+autorefill tool</code></pre>
+    <div class="warn">
+      <span class="label">ВНИМАНИЕ</span>
+      <span class="tipbody">Поддерживаются оба стиля: <code>Default:</code> (документация) и <code>[Default]</code> (секции). В одном файле придерживайтесь одного.</span>
+    </div>
+
+    <h2 id="tree">Дерево предметов (InvTweaksTree.txt)</h2>
+    <p>Дерево задаёт ключевые слова для правил и порядок предметов внутри категории. Порядок важен: при <code>D1 sword</code> предпочтение отдаётся мечам, указанным выше.</p>
+
+    <h3 id="tree-custom">Структура и свои категории</h3>
+    <p>Файл в формате XML, корневой элемент — <code>stuff</code>. Свои категории вкладываются прямо в него, имя элемента становится ключевым словом:</p>
+    <pre><code>&lt;stuff treeVersion="1.20.1"&gt;
+  &lt;myCategory&gt;
+    &lt;dirt id="minecraft:dirt"/&gt;
+    &lt;cake id="minecraft:cake"/&gt;
+  &lt;/myCategory&gt;
+&lt;/stuff&gt;</code></pre>
+    <p>Теперь <code>myCategory</code> соответствует только земле и торту. Убирать предмет из исходной категории не нужно; один предмет может быть в нескольких. Новые категории лучше ставить в начало, сразу под <code>&lt;stuff&gt;</code>.</p>
+
+    <h3 id="tree-damage">ID и варианты</h3>
+    <p>Некоторые предметы различаются только значением damage:</p>
+    <pre><code>&lt;sexyWools&gt;
+  &lt;magentaWool id="minecraft:wool" damage="2"/&gt;
+  &lt;pinkWool id="minecraft:wool" damage="6"/&gt;
+  &lt;purpleWool id="minecraft:wool" damage="10"/&gt;
+&lt;/sexyWools&gt;</code></pre>
+
+    <h3>Особые данные</h3>
+    <p>Зелья и именованные предметы требуют дополнительных данных:</p>
+    <pre><code>&lt;specialPotion&gt;
+  &lt;specialPotionA id="minecraft:potion" data='{Potion:"minecraft:strong_healing"}'/&gt;
+&lt;/specialPotion&gt;
+
+&lt;specialPickaxe id="minecraft:diamond_pickaxe"
+  data='{display:{Name:"My Special Pickaxe"}}'/&gt;</code></pre>
+
+    <h3>Атрибуты</h3>
+    <table>
+      <tr><th>Атрибут</th><th>Где</th><th>Описание</th></tr>
+      <tr><td><code>id</code></td><td>Предмет</td><td>Регистрационное имя, например <code>minecraft:stone</code></td></tr>
+      <tr><td><code>damage</code></td><td>Предмет</td><td>Значение варианта, по умолчанию подстановочное</td></tr>
+      <tr><td><code>dmin</code> / <code>dmax</code></td><td>Категория</td><td>Создать записи для диапазона damage</td></tr>
+      <tr><td><code>class</code></td><td>Категория</td><td>Сопоставление по классу: <code>armor</code>, <code>sword</code>, <code>bow</code>, <code>pickaxe</code>, <code>shovel</code>, <code>axe</code>, <code>hoe</code>, <code>shears</code>, <code>arrow</code>, <code>fishing</code></td></tr>
+      <tr><td><code>data</code></td><td>Категория</td><td>Условия вида <code>data="toolclass:pickaxe"</code>, <code>data="armortype:head"</code>; через запятую</td></tr>
+      <tr><td><code>order</code></td><td>Любой</td><td>Порядок среди соседних элементов</td></tr>
+      <tr><td><code>mergePrevious</code> / <code>mergeChildren</code></td><td>Любой</td><td>Порядок объединения с предыдущим / дочерними</td></tr>
+      <tr><td><code>treeVersion</code></td><td>Корень</td><td>Версия игры для дерева; только запись. При смене версии файл копируется в резерв и пересоздаётся</td></tr>
+    </table>
+
+    <h3>Расширение и объединение</h3>
+    <p>Дополнительные фрагменты кладутся в <code>config/InvTweaks/trees/</code> с расширением <code>.tree</code> и объединяются при запуске. Сломанный фрагмент можно удалить — он пересоздастся, старый сохранится как <code>*.bak</code>.</p>
+    <div class="warn">
+      <span class="label">ВНИМАНИЕ</span>
+      <span class="tipbody">Опечатка в ключевом слове дерева делает соответствующую строку правил недействительной; игра сообщает об этом в чате.</span>
+    </div>
+
+    <h2 id="compat">Совместимость контейнеров (InvTweaksCompatibility.xml)</h2>
+    <p>По умолчанию файла нет; создайте его при необходимости. Он указывает, у каких контейнеров показывать кнопки:</p>
+    <pre><code>&lt;root&gt;
+  &lt;!-- как сундук: кнопки сортировки --&gt;
+  &lt;chest class="mod.container.MyChestContainer" row_size="9" large_chest="false"/&gt;
+  &lt;!-- как обычный контейнер: только кнопка настроек --&gt;
+  &lt;inventory class="mod.container.MyInventoryContainer" disable_buttons="false"/&gt;
+&lt;/root&gt;</code></pre>
+    <p>Он передаёт лишь базовую информацию и работает не со всеми модами; при проблемах с контейнером сначала обратитесь к автору мода за поддержкой API.</p>
+
+    <h2 id="faq">Вопросы и ответы</h2>
+    <h3>В чате «Mod can't work because it couldn't find…»</h3>
+    <p>В jar не хватает ресурса конфигурации (обычно проблема сборки). Удалите <code>config/InvTweaks/</code> и перезапустите — корректная сборка создаст его заново.</p>
+    <h3>R не работает</h3>
+    <p>Проверьте три вещи: клавишу сортировки (по умолчанию R, см. «Настройки → Управление»); экран допускает сортировку; курсор находится над ячейкой, что определяет область.</p>
+    <h3>Модификатор + ЛКМ не работает</h3>
+    <p>Проверьте <code>enableShortcuts=true</code> в <code>InvTweaks.cfg</code> и что «Горячие клавиши» включены в настройках. Клавиши не должны конфликтовать с ванильными.</p>
+    <h3>R + цифра / удержание R не работает</h3>
+    <p>При одном профиле переключаться не на что. Добавьте хотя бы один профиль, например <code>Mining:</code>.</p>
+    <h3>Изменения конфигурации не применяются</h3>
+    <p>Правила и клавиши применяются при следующей сортировке; после правки дерева перезапустите клиент. Если дерево было пересоздано, старый файл останется как <code>*.bak</code>.</p>
+    <h3>Предметы из модов сортируются не так, как хочется</h3>
+    <p>Отредактируйте <code>InvTweaksTree.txt</code> и добавьте предметы по <code>id</code> в нужную категорию. Чтобы узнать id, нажмите <kbd>F3</kbd> + <kbd>H</kbd> для расширенных подсказок и наведите курсор на предмет.</p>
+    <h3>Иконки выглядят плохо с моим ресурспаком</h3>
+    <p>Кнопки рисуются ванильной текстурой. Добавьте в пак <code>assets/inventorytweaks/textures/gui/button10px.png</code>, чтобы заменить её.</p>
+  </main>
+
+  <aside class="toc">
+    <h4>На этой странице</h4>
+    <ul id="tocList">
+      <li><a href="#start">Быстрый старт</a></li>
+      <li><a href="#install">Установка</a></li>
+      <li><a href="#sorting">Основы сортировки</a></li>
+      <li><a href="#buttons">Кнопки контейнеров</a></li>
+      <li><a href="#keys">Горячие клавиши</a></li>
+      <li><a href="#refill">Автопополнение</a></li>
+      <li><a href="#files">Конфигурация</a></li>
+      <li><a href="#rules">Правила сортировки</a></li>
+      <li class="sub"><a href="#rules-targets">Области</a></li>
+      <li class="sub"><a href="#rules-modifiers">Модификаторы</a></li>
+      <li class="sub"><a href="#rules-keywords">Ключевые слова</a></li>
+      <li class="sub"><a href="#rules-locked">Блокировка и заморозка</a></li>
+      <li class="sub"><a href="#rules-configs">Профили</a></li>
+      <li><a href="#tree">Дерево предметов</a></li>
+      <li class="sub"><a href="#tree-custom">Свои категории</a></li>
+      <li class="sub"><a href="#tree-damage">ID и варианты</a></li>
+      <li><a href="#compat">Совместимость</a></li>
+      <li><a href="#faq">Вопросы и ответы</a></li>
+    </ul>
+    <div class="meta">
+      <h4>Исходники и ресурсы</h4>
+      <a href="https://github.com/huan25748/Inventory-Tweaks-Remaked" target="_blank" rel="noopener">Репозиторий GitHub</a>
+      <a href="https://huan25748.github.io/Inventory-Tweaks-Remaked/" target="_blank" rel="noopener">Документация онлайн</a>
+      <a href="https://inventory-tweaks.readthedocs.io/en/latest/" target="_blank" rel="noopener">Оригинальная документация</a>
+      <a href="#top">Наверх</a>
+      <p style="margin-top:12px">Inventory Tweaks Remaked<br>На основе Inventory Tweaks 1.12.2<br>Авторы оригинала Jimeo Wan / kobata</p>
+    </div>
+  </aside>
+</div>
+
+<footer class="footer">
+  Inventory Tweaks Remaked · только клиент · Fabric / Forge / NeoForge, много версий
+</footer>
+
+<script>
+(function () {
+  var q = document.getElementById('q');
+  var box = q ? q.parentNode : null;
+  var panel = null;
+  var hits = [];
+  var cursor = -1;
+  var index = [];
+
+  function buildIndex() {
+    index = [];
+    var heads = document.querySelectorAll('.content h2[id], .content h3[id]');
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      var parts = [h.textContent.trim()];
+      var n = h.nextElementSibling;
+      while (n && n.tagName !== 'H2' && n.tagName !== 'H3') {
+        parts.push(n.textContent.replace(/\s+/g, ' ').trim());
+        n = n.nextElementSibling;
+      }
+      index.push({ id: h.id, title: h.textContent.trim(), body: parts.join(' ') });
+    }
+  }
+
+  function esc(s) {
+    return s.replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function mark(text, term) {
+    var i = text.toLowerCase().indexOf(term);
+    if (i < 0) return esc(text.slice(0, 110));
+    var from = Math.max(0, i - 40);
+    var cut = text.slice(from, from + 130);
+    var j = cut.toLowerCase().indexOf(term);
+    if (j < 0) return esc(cut);
+    return (from > 0 ? '…' : '') +
+      esc(cut.slice(0, j)) + '<mark>' + esc(cut.slice(j, j + term.length)) + '</mark>' +
+      esc(cut.slice(j + term.length));
+  }
+
+  function otherLangs(term) {
+    var links = document.querySelectorAll('.langswitch a');
+    var parts = [];
+    for (var i = 0; i < links.length; i++) {
+      var a = links[i];
+      if (!a.classList.contains('active')) {
+        parts.push('<a class="sr-lang" href="' + a.getAttribute('href') + '?q=' + encodeURIComponent(term) + '">' + a.textContent + '</a>');
+      }
+    }
+    return parts.join(' ');
+  }
+
+  function render(term) {
+    if (!panel) return;
+    if (!term) { panel.style.display = 'none'; panel.innerHTML = ''; hits = []; cursor = -1; return; }
+    var lower = term.toLowerCase();
+    hits = index
+      .map(function (e) {
+        var inTitle = e.title.toLowerCase().indexOf(lower) >= 0;
+        var inBody = e.body.toLowerCase().indexOf(lower) >= 0;
+        return { e: e, score: inTitle ? 0 : (inBody ? 1 : 9) };
+      })
+      .filter(function (x) { return x.score < 9; })
+      .sort(function (a, b) { return a.score - b.score; })
+      .slice(0, 8)
+      .map(function (x) { return x.e; });
+
+    if (!hits.length) {
+      panel.innerHTML = '<div class="sr-empty">No results for “' + esc(term) + '”.<br>' +
+        '<span class="sr-langs">Search another language: ' + otherLangs(term) + '</span></div>';
+      panel.style.display = 'block';
+      cursor = -1;
+      return;
+    }
+    panel.innerHTML = hits.map(function (e, i) {
+      return '<a href="#' + e.id + '" data-i="' + i + '" class="' + (i === 0 ? 'active' : '') + '">' +
+        '<span class="sr-title">' + mark(e.title, lower) + '</span>' +
+        '<span class="sr-snippet">' + mark(e.body, lower) + '</span></a>';
+    }).join('');
+    panel.style.display = 'block';
+    cursor = 0;
+  }
+
+  function go(i) {
+    if (!hits[i]) return false;
+    location.hash = hits[i].id;
+    if (panel) panel.style.display = 'none';
+    if (q) q.blur();
+    return true;
+  }
+
+  if (q && box) {
+    panel = document.createElement('div');
+    panel.className = 'search-results';
+    box.appendChild(panel);
+    buildIndex();
+
+    var preset = new URLSearchParams(location.search).get('q');
+    if (preset) { q.value = preset; render(preset); }
+
+    q.addEventListener('input', function () { render(q.value.trim()); });
+    q.addEventListener('focus', function () { if (q.value.trim()) render(q.value.trim()); });
+
+    q.addEventListener('keydown', function (e) {
+      var term = q.value.trim();
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (!hits.length || panel.style.display === 'none' || panel.style.display === '') {
+          render(term);
+        }
+        if (hits.length) go(cursor < 0 ? 0 : cursor);
+        else if (term) render(term);
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!hits.length) return;
+        cursor = (cursor + 1) % hits.length;
+        panel.querySelectorAll('a[data-i]').forEach(function (a) { a.classList.toggle('active', +a.dataset.i === cursor); });
+        var act = panel.querySelector('a.active');
+        if (act) act.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!hits.length) return;
+        cursor = (cursor - 1 + hits.length) % hits.length;
+        panel.querySelectorAll('a[data-i]').forEach(function (a) { a.classList.toggle('active', +a.dataset.i === cursor); });
+        var act2 = panel.querySelector('a.active');
+        if (act2) act2.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Escape') {
+        panel.style.display = 'none';
+        q.value = '';
+        q.blur();
+      }
+    });
+
+    panel.addEventListener('mousedown', function (e) {
+      var a = e.target.closest && e.target.closest('a[data-i]');
+      if (a) { e.preventDefault(); go(parseInt(a.getAttribute('data-i'), 10)); }
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!box.contains(e.target)) panel.style.display = 'none';
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); q.focus(); }
+    });
+  }
+
+  document.querySelectorAll('.langswitch a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var base = a.getAttribute('href').split(/[?#]/)[0];
+      var query = q && q.value.trim() ? '?q=' + encodeURIComponent(q.value.trim()) : '';
+      var hash = location.hash ? location.hash : '';
+      a.href = base + query + hash;
+    });
+  });
+
+  var btn = document.getElementById('theme');
+  var root = document.documentElement;
+  if (btn) btn.addEventListener('click', function () {
+    var dark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.sidebar a, #tocList a'));
+  var targets = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+  function sync() {
+    var y = window.scrollY + 90, best = -1;
+    targets.forEach(function (t, i) { if (t && t.offsetTop <= y) best = i; });
+    links.forEach(function (a, i) { a.classList.toggle('active', i === best); });
+  }
+  window.addEventListener('scroll', sync, { passive: true });
+  sync();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inventory Tweaks Remaked — Documentation</title>
+<style>
+:root{
+  --bg:#ffffff; --panel:#ffffff; --sidebar:#fbfbfd; --ink:#16181d; --muted:#5b6070;
+  --line:#e3e6ec; --line-soft:#eef0f4; --link:#0b63c5; --link-hover:#0a4f9e;
+  --code-bg:#f5f6f8; --code-border:#e1e4ea; --tip-bg:#eaf4ff; --tip-line:#a9d2ff;
+  --warn-bg:#fff6e8; --warn-line:#f0c67a; --kbd-bg:#fff; --kbd-line:#c9ced8;
+  --active-bg:#e9f2ff; --active-ink:#0b63c5; --header-h:56px; --maxw:1600px;
+}
+html[data-theme="dark"]{
+  --bg:#14161a; --panel:#14161a; --sidebar:#171a1f; --ink:#e6e8ee; --muted:#9aa1b0;
+  --line:#2a2f38; --line-soft:#22262e; --link:#7fb6ff; --link-hover:#a5ccff;
+  --code-bg:#1b1f26; --code-border:#2a2f38; --tip-bg:#152435; --tip-line:#2c5d91;
+  --warn-bg:#2a2113; --warn-line:#7a5a20; --kbd-bg:#1b1f26; --kbd-line:#3a414d;
+  --active-bg:#1a2635; --active-ink:#8fc1ff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased}
+a{color:var(--link);text-decoration:none}
+a:hover{color:var(--link-hover);text-decoration:underline}
+code{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.86em;
+  background:var(--code-bg);border:1px solid var(--code-border);border-radius:4px;padding:.1em .35em}
+pre{margin:16px 0;background:var(--code-bg);border:1px solid var(--code-border);border-radius:8px;
+  padding:16px 18px;overflow:auto;line-height:1.6}
+pre code{background:none;border:0;padding:0;font-size:13px;white-space:pre}
+
+/* slim scrollbars */
+*{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--line);border:3px solid var(--bg);border-radius:8px}
+::-webkit-scrollbar-thumb:hover{background:var(--kbd-line)}
+html[data-theme="dark"] ::-webkit-scrollbar-thumb{border-color:var(--bg)}
+
+.tip .tipbody{display:block}
+.langswitch{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;font-size:13px}
+.langswitch a{padding:3px 9px;color:var(--muted);line-height:1.6}
+.langswitch a:hover{color:var(--ink);text-decoration:none;background:var(--line-soft)}
+.langswitch a.active{background:var(--code-bg);color:var(--ink);font-weight:600}
+.search{position:relative}
+.search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;display:none;z-index:80;
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:auto;max-height:60vh;
+  box-shadow:0 10px 30px rgba(20,25,40,.12);padding:4px}
+.search-results a{display:block;padding:7px 10px;border-radius:6px;color:var(--ink)}
+.search-results a:hover,.search-results a.active{background:var(--code-bg);text-decoration:none}
+.search-results .sr-title{display:block;font-size:13px;font-weight:600}
+.search-results .sr-snippet{display:block;font-size:12px;line-height:1.5;color:var(--muted);margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.search-results mark{background:#ffe9a8;color:inherit;border-radius:2px;padding:0 1px}
+html[data-theme="dark"] .search-results mark{background:#6b5a1f;color:#fff}
+.search-results .sr-langs{margin-top:6px;display:block;font-size:12px}
+.search-results .sr-lang{display:inline-block;margin-right:8px;color:var(--link)}
+.search-results .sr-empty{line-height:1.6}
+.search-results .sr-empty{padding:10px 12px;font-size:13px;color:var(--muted)}
+kbd{font-family:inherit;font-size:12.5px;background:var(--kbd-bg);border:1px solid var(--kbd-line);
+  border-bottom-width:2px;border-radius:5px;padding:1px 6px;color:var(--ink)}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:50;height:var(--header-h);background:var(--panel);
+  border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:0 20px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;color:var(--ink);white-space:nowrap}
+.brand svg{display:block}
+.brand span{font-size:15px}
+.search{flex:1;max-width:440px;margin:0 auto;display:flex;align-items:center;gap:8px;
+  background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--muted)}
+.search input{flex:1;border:0;background:transparent;color:var(--ink);font:inherit;outline:none;min-width:0}
+.search kbd{font-size:11px;padding:0 5px}
+.topnav{display:flex;align-items:center;gap:16px;font-size:14px;color:var(--muted);white-space:nowrap}
+.topnav a{color:var(--muted)}
+.topnav a:hover{color:var(--ink);text-decoration:none}
+.pill{border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-size:13px;color:var(--ink);background:var(--panel)}
+.iconbtn{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:6px;
+  width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.iconbtn:hover{color:var(--ink)}
+
+.layout{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:216px minmax(0,1fr) 252px;gap:0}
+
+/* sidebar */
+.sidebar{background:var(--sidebar);border-right:1px solid var(--line);padding:18px 10px 60px;
+  position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow:auto}
+.sidebar .eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+  margin:4px 10px 10px;font-weight:600}
+.sidebar details{margin:2px 0}
+.sidebar summary{list-style:none;display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;padding:7px 10px;border-radius:6px;font-size:14px;font-weight:600;color:var(--ink)}
+.sidebar summary::-webkit-details-marker{display:none}
+.sidebar summary:hover{background:var(--line-soft)}
+.sidebar summary .chev{transition:transform .15s ease;color:#9aa1b0;flex:none}
+.sidebar details[open] summary .chev{transform:rotate(90deg);color:#7c8394}
+.sidebar ul{list-style:none;margin:2px 0 8px;padding:0}
+.sidebar li a{display:block;padding:5px 10px 5px 24px;border-radius:6px;color:var(--muted);font-size:14px}
+.sidebar li a:hover{background:var(--line-soft);color:var(--ink);text-decoration:none}
+.sidebar li a.active{background:var(--active-bg);color:var(--active-ink);font-weight:600}
+
+/* content */
+.content{min-width:0;padding:34px 52px 120px}
+.crumbs{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-bottom:18px}
+.crumbs .pill{font-size:12px;padding:2px 7px}
+h1{font-size:38px;line-height:1.2;margin:0 0 14px;letter-spacing:-.01em}
+.lead{font-size:15px;color:var(--muted);font-style:italic;margin:0 0 26px}
+h2{font-size:22px;line-height:1.35;margin:42px 0 14px;padding-top:22px;border-top:1px solid var(--line-soft);
+  scroll-margin-top:80px}
+h2:first-of-type{border-top:0;margin-top:8px;padding-top:0}
+h3{font-size:16px;margin:26px 0 8px;scroll-margin-top:80px}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 16px;padding-left:22px}
+li{margin:3px 0}
+.tip{background:var(--tip-bg);border:1px solid var(--tip-line);border-radius:8px;padding:12px 16px;margin:18px 0}
+.tip .label{font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--link);display:block;margin-bottom:4px}
+.warn{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:8px;padding:12px 16px;margin:18px 0}
+.warn .label{font-size:12px;font-weight:700;letter-spacing:.06em;color:#9a6a12;display:block;margin-bottom:4px}
+table{border-collapse:collapse;width:100%;margin:14px 0 18px;font-size:14px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);font-weight:600;color:var(--ink);white-space:nowrap}
+.icocell{width:52px;text-align:center}
+svg.ico{border:1px solid var(--line);border-radius:4px;image-rendering:pixelated;display:inline-block;vertical-align:middle}
+
+/* right toc */
+.toc{position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow:auto;
+  padding:34px 10px 60px 18px;font-size:13px}
+.toc h4{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.toc ul{list-style:none;margin:0 0 26px;padding:0;border-left:1px solid var(--line)}
+.toc li a{display:block;padding:4px 0 4px 12px;color:var(--muted);margin-left:-1px;border-left:2px solid transparent}
+.toc li a:hover{color:var(--ink);text-decoration:none}
+.toc li a.active{color:var(--link);border-left-color:var(--link);font-weight:600}
+.toc li.sub a{padding-left:24px;font-size:12.5px}
+.meta{border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:12.5px;line-height:1.8}
+.meta a{display:block}
+
+.footer{max-width:var(--maxw);margin:0 auto;border-top:1px solid var(--line);
+  padding:18px 46px 40px;color:var(--muted);font-size:13px}
+
+@media (max-width:1240px){
+  .layout{grid-template-columns:204px minmax(0,1fr)}
+  .toc{display:none}
+}
+@media (max-width:840px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .content{padding:26px 20px 80px}
+  h1{font-size:30px}
+  .search{display:none}
+  .topnav{gap:12px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#top" aria-label="Inventory Tweaks Remaked">
+    <span>Inventory Tweaks</span>
+  </a>
+  <div class="search"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.6 10.6 14 14"/></svg>
+    <input id="q" type="search" placeholder="Rechercher dans la documentation" aria-label="Rechercher dans la documentation">
+    <kbd>Ctrl K</kbd>
+  </div>
+  <nav class="topnav">
+    <a href="#start">Démarrage</a>
+    <a href="#rules">Règles de tri</a>
+    <a href="https://github.com/huan25748/Inventory-Tweaks-Remaked" target="_blank" rel="noopener">Code</a>
+    <span class="langswitch"><a href="zh.html">中文</a><a href="index.html">EN</a><a href="ja.html">日本語</a><a href="fr.html" class="active">FR</a><a href="ru.html">RU</a></span>
+    <button class="iconbtn" id="theme" title="Basculer le mode sombre" aria-label="Basculer le mode sombre">◐</button>
+  </nav>
+</header>
+
+<div class="layout" id="top">
+  <aside class="sidebar">
+    <div class="eyebrow">DOCUMENTATION</div>
+
+    <details open>
+      <summary><span class="lbl">Démarrage</span> <svg class="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></summary>
+      <ul>
+        <li><a href="#start">Démarrage rapide</a></li>
+        <li><a href="#install">Installation</a></li>
+      </ul>
+    </details>
+
+    <details open>
+      <summary><span class="lbl">Tri</span> <svg class="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></summary>
+      <ul>
+        <li><a href="#sorting">Tri de base</a></li>
+        <li><a href="#buttons">Boutons des conteneurs</a></li>
+        <li><a href="#keys">Raccourcis</a></li>
+        <li><a href="#refill">Réapprovisionnement</a></li>
+      </ul>
+    </details>
+
+    <details open>
+      <summary><span class="lbl">Règles et arbre d'objets</span> <svg class="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></summary>
+      <ul>
+        <li><a href="#files">Fichiers de configuration</a></li>
+        <li><a href="#rules">Règles de tri</a></li>
+        <li><a href="#rules-targets">Zones</a></li>
+        <li><a href="#rules-modifiers">Modificateurs</a></li>
+        <li><a href="#rules-keywords">Mots-clés</a></li>
+        <li><a href="#rules-locked">Verrouillé et gelé</a></li>
+        <li><a href="#rules-configs">Profils multiples</a></li>
+        <li><a href="#tree">Arbre d'objets</a></li>
+        <li><a href="#tree-custom">Catégories personnalisées</a></li>
+        <li><a href="#tree-damage">ID et variantes</a></li>
+      </ul>
+    </details>
+
+    <details>
+      <summary><span class="lbl">Divers</span> <svg class="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 2.5 8 6l-3.5 3.5"/></svg></summary>
+      <ul>
+        <li><a href="#compat">Compatibilité conteneurs</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </details>
+  </aside>
+
+  <main class="content">
+    <div class="crumbs">
+      <span class="pill">Docs</span>
+      <span>/</span>
+      <span>Inventory Tweaks Remaked</span>
+    </div>
+
+    <h1>Inventory Tweaks Remaked</h1>
+    <p class="lead">Tri de l'inventaire, tri des conteneurs, réapprovisionnement automatique et arbre d'objets — le portage moderne d'Inventory Tweaks pour Minecraft 1.12.2.</p>
+
+    <p>Placez le jar correspondant à votre version dans le dossier <code>mods</code>. C'est un <strong>mod client uniquement</strong> : le serveur n'a pas besoin de l'installer et aucun paquet supplémentaire n'est envoyé.</p>
+
+    <div class="tip">
+      <span class="label">ASTUCE</span>
+      <span class="tipbody">Au premier lancement, la configuration par défaut est créée dans <code>config/InvTweaks/</code>. Rien n'apparaît dans le chat ; une seule ligne est écrite dans <code>logs/latest.log</code>.</span>
+    </div>
+
+    <h2 id="start">Démarrage rapide</h2>
+    <p>Après l'installation, ouvrez votre inventaire : un bouton <strong>« … »</strong> apparaît en haut à droite de la barre de titre. S'il est là, le mod est chargé. Cliquez dessus pour ouvrir les réglages.</p>
+    <ul>
+      <li><kbd>R</kbd> : trie la zone sous le curseur. Inutile d'ouvrir l'inventaire au préalable.</li>
+      <li>Clic du milieu : trie ; sur un coffre, chaque clic fait défiler les trois algorithmes.</li>
+      <li>Boutons à droite de la ligne de titre du conteneur : tri par défaut, vertical, horizontal, réglages et transfert d'objets.</li>
+      <li><kbd>Ctrl</kbd> / <kbd>Maj</kbd> / <kbd>Espace</kbd> / <kbd>Alt</kbd> + clic gauche : déplacer ou jeter des objets.</li>
+    </ul>
+    <p>Règles, profils et catégories se trouvent dans <code>config/InvTweaks/</code>. Aucun redémarrage nécessaire : sauvegardez, revenez au jeu et triez une fois.</p>
+
+    <h2 id="install">Installation</h2>
+    <p>Chaque loader et chaque version de jeu a son propre jar. N'installez que le fichier correspondant exactement à votre instance.</p>
+    <table>
+      <tr><th>Loader</th><th>Version du jeu</th><th>Nom du jar</th></tr>
+      <tr><td>Fabric</td><td>1.20.1</td><td><code>inventorytweaksremaked-fabric-1.20.1-1.0.0.jar</code></td></tr>
+      <tr><td>Fabric</td><td>1.21 / 1.21.1 / 1.21.3 / 1.21.4 / 1.21.5 / 1.21.8 / 1.21.10 / 1.21.11</td><td><code>inventorytweaksremaked-fabric-&lt;version&gt;-1.0.0.jar</code></td></tr>
+      <tr><td>Fabric</td><td>26.1.2 / 26.2 / 26.3</td><td><code>inventorytweaksremaked-fabric-&lt;version&gt;-1.0.0.jar</code></td></tr>
+      <tr><td>Forge 47.x</td><td>1.20.1</td><td><code>inventorytweaksremaked-forge-1.20.1-1.1.0.jar</code></td></tr>
+      <tr><td>NeoForge 21.x</td><td>1.21 / 1.21.1 / 1.21.3 / 1.21.4 / 1.21.5 / 1.21.8 / 1.21.10 / 1.21.11</td><td><code>inventorytweaksremaked-neoforge-&lt;version&gt;-1.1.1.jar</code></td></tr>
+      <tr><td>NeoForge 26.x</td><td>26.1.2 / 26.2 / 26.3 (Java 25 requis)</td><td><code>inventorytweaksremaked-neoforge-&lt;version&gt;-1.1.0.jar</code></td></tr>
+    </table>
+    <p>Les versions Fabric nécessitent un Fabric Loader et Fabric API correspondants ; les versions Forge et NeoForge n'ont aucune dépendance supplémentaire.</p>
+
+    <h2 id="sorting">Tri de base</h2>
+    <h3>La touche R suit le curseur</h3>
+    <p>La zone triée dépend de <strong>l'emplacement du pointeur</strong>. Pas besoin d'ouvrir l'inventaire :</p>
+    <table>
+      <tr><th>Curseur sur</th><th>Résultat</th></tr>
+      <tr><td>Un emplacement du coffre (conteneur)</td><td>Seul le conteneur est trié</td></tr>
+      <tr><td>Inventaire / barre rapide</td><td>Seul l'inventaire est trié</td></tr>
+      <tr><td>Grille d'artisanat, boutons, zone vide</td><td>Conteneur et inventaire sont triés ensemble (inventaire seul s'il n'y a pas de conteneur)</td></tr>
+    </table>
+
+    <h3>Clic du milieu</h3>
+    <p>Le clic du milieu utilise aussi la position du curseur. Sur un coffre, chaque clic alterne <strong>défaut → vertical → horizontal</strong>.</p>
+    <p>Cas particulier : si le curseur est sur un <strong>emplacement d'artisanat</strong>, le clic ne trie pas mais <strong>répartit la pile équitablement</strong>, par exemple pour répartir le bois entre les deux cases lors de la fabrication de bâtons.</p>
+
+    <h3>Algorithmes de tri</h3>
+    <table>
+      <tr><th>Algorithme</th><th>Ordre de remplissage</th><th>Idéal pour</th></tr>
+      <tr><td>Défaut</td><td>Remplit objet par objet selon l'ordre de l'arbre</td><td>Inventaire et coffres du quotidien</td></tr>
+      <tr><td>Vertical (par colonne)</td><td>Colonne par colonne, de haut en bas</td><td>Classer par colonne</td></tr>
+      <tr><td>Horizontal (par ligne)</td><td>Ligne par ligne, de gauche à droite</td><td>Classer par ligne</td></tr>
+    </table>
+
+    <h3>Inventaire créatif</h3>
+    <p>Le panneau créatif ne garde qu'un bouton de réglages à l'extrémité droite de sa ligne de titre ; <kbd>R</kbd> et le clic du milieu ne trient jamais la liste créative.</p>
+
+    <h2 id="buttons">Boutons des conteneurs</h2>
+    <p>Les icônes ci-dessous reproduisent le pixel art 10×10 réel du mod, agrandi en 30×30. Un survol d'environ 0,8 s affiche l'infobulle indiquée.</p>
+    <table>
+      <tr><th>Icône</th><th>Position</th><th>Infobulle</th><th>Action</th></tr>
+      <tr><td class="icocell"><svg class="ico" viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#6f6f6f"/><g fill="#e9e9e9"><rect x="3" y="3" width="4" height="1"/><rect x="5" y="4" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="3" y="6" width="4" height="1"/></g></svg></td><td>Extrême gauche de la rangée</td><td><code>Tri par défaut</code></td><td>Trie le conteneur avec l'algorithme configuré</td></tr>
+      <tr><td class="icocell"><svg class="ico" viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#6f6f6f"/><g fill="#e9e9e9"><rect x="3" y="3" width="1" height="4"/><rect x="6" y="3" width="1" height="4"/></g></svg></td><td>Milieu de la rangée</td><td><code>Tri par colonne</code></td><td>Vertical : remplit colonne par colonne</td></tr>
+      <tr><td class="icocell"><svg class="ico" viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#6f6f6f"/><g fill="#e9e9e9"><rect x="3" y="3" width="4" height="1"/><rect x="3" y="6" width="4" height="1"/></g></svg></td><td>Milieu de la rangée</td><td><code>Tri par ligne</code></td><td>Horizontal : remplit ligne par ligne</td></tr>
+      <tr><td class="icocell"><svg class="ico" viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#6f6f6f"/><g fill="#e9e9e9"><rect x="3" y="6" width="1" height="1"/><rect x="5" y="6" width="1" height="1"/><rect x="7" y="6" width="1" height="1"/></g></svg></td><td>Extrême droite de la rangée</td><td><code>Réglages de l'inventaire</code></td><td>Ouvre l'écran de réglages d'Inventory Tweaks</td></tr>
+      <tr><td class="icocell"><svg class="ico" viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#6f6f6f"/><g fill="#e9e9e9"><rect x="4" y="2" width="1" height="1"/><rect x="3" y="3" width="3" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="6" y="4" width="1" height="1"/><rect x="4" y="5" width="1" height="2"/><rect x="4" y="6" width="4" height="1"/></g></svg></td><td>Fin de la ligne d'inventaire, à gauche</td><td><code>Transférer vers le conteneur</code></td><td>Clic : complète les piles existantes ; Maj : tout sauf la barre rapide ; Alt+Maj : tout</td></tr>
+      <tr><td class="icocell"><svg class="ico" viewBox="0 0 10 10" width="30" height="30" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="#6f6f6f"/><g fill="#e9e9e9"><rect x="4" y="3" width="4" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="3" y="6" width="3" height="1"/><rect x="4" y="7" width="1" height="1"/></g></svg></td><td>Fin de la ligne d'inventaire, à droite</td><td><code>Transférer vers l'inventaire</code></td><td>Maj : récupère tout le contenu du conteneur</td></tr>
+    </table>
+    <div class="tip">
+      <span class="label">ASTUCE</span>
+      <span class="tipbody">Les boutons vertical/horizontal n'apparaissent que si le conteneur fait 9 emplacements de large au maximum. Les conteneurs qui dessinent leurs propres boutons (Sophisticated Backpacks, etc.) décalent la rangée vers la gauche pour éviter tout chevauchement.</span>
+    </div>
+
+    <h2 id="keys">Raccourcis</h2>
+    <p>Voici les touches par défaut. Modifiez-les via le menu « … » de l'inventaire ou dans <code>config/InvTweaks/InvTweaks.cfg</code>.</p>
+    <table>
+      <tr><th>Action</th><th>Touche par défaut</th><th>Remarques</th></tr>
+      <tr><td>Trier la zone sous le curseur</td><td><kbd>R</kbd></td><td>Fonctionne partout en jeu, sans ouvrir l'inventaire</td></tr>
+      <tr><td>Trier (changer d'algorithme)</td><td>Clic du milieu</td><td>Alterne défaut / vertical / horizontal sur les coffres</td></tr>
+      <tr><td>Déplacer 1 objet</td><td><kbd>Ctrl</kbd> + clic gauche</td><td>Déplace un seul objet de la pile</td></tr>
+      <tr><td>Déplacer tous les objets du même type</td><td><kbd>Ctrl + Maj</kbd> + clic gauche</td><td>Déplace toutes les piles de cet objet</td></tr>
+      <tr><td>Déplacer une pile</td><td><kbd>Maj</kbd> + clic gauche</td><td>Déplace la pile entière</td></tr>
+      <tr><td>Tout déplacer</td><td><kbd>Espace</kbd> + clic gauche</td><td>Déplace tous les objets de la zone, sans distinction de type</td></tr>
+      <tr><td>Vers la zone supérieure</td><td><kbd>↑</kbd> + clic gauche</td><td>Vers la moitié haute du conteneur / de l'inventaire</td></tr>
+      <tr><td>Vers la zone inférieure</td><td><kbd>↓</kbd> + clic gauche</td><td>Vers la moitié basse</td></tr>
+      <tr><td>Jeter</td><td><kbd>Alt</kbd> + clic gauche</td><td>Jette l'objet au sol</td></tr>
+      <tr><td>Vers un emplacement de barre rapide</td><td><kbd>1</kbd>–<kbd>9</kbd> + clic gauche</td><td>Place directement l'objet dans cet emplacement</td></tr>
+      <tr><td>Changer de profil</td><td><kbd>R</kbd> + <kbd>1</kbd>–<kbd>9</kbd></td><td>Le numéro suit l'ordre des profils du fichier</td></tr>
+      <tr><td>Faire défiler les profils</td><td>Maintenir <kbd>R</kbd> ~1 s</td><td>Parcourt les profils dans l'ordre</td></tr>
+    </table>
+    <div class="warn">
+      <span class="label">REMARQUE</span>
+      <span class="tipbody">Le changement de profil ne fonctionne que si le fichier de règles définit <strong>au moins deux</strong> profils ; par défaut, il n'y en a qu'un.</span>
+    </div>
+
+    <h2 id="refill">Réapprovisionnement automatique</h2>
+    <p>Quand vous mangez, cassez un outil ou épuisez une pile de blocs, le mod déplace automatiquement un objet identique de votre inventaire vers l'emplacement courant.</p>
+    <table>
+      <tr><th>Option</th><th>Défaut</th><th>Description</th></tr>
+      <tr><td><code>enableAutoRefill</code></td><td>true</td><td>Interrupteur principal</td></tr>
+      <tr><td><code>autoRefillBeforeBreak</code></td><td>false</td><td>Remplace l'outil <em>avant</em> qu'il ne casse</td></tr>
+      <tr><td><code>autoRefillDamageThreshhold</code></td><td>5</td><td>Remplace quand la durabilité restante passe sous cette valeur</td></tr>
+    </table>
+    <p>Les objets concernés sont définis par la ligne <code>autorefill</code> du fichier de règles ; les emplacements <code>FROZEN</code> ne participent jamais au réapprovisionnement.</p>
+
+    <h2 id="files">Fichiers de configuration</h2>
+    <p>Tout se trouve dans <code>config/InvTweaks/</code> :</p>
+    <table>
+      <tr><th>Fichier</th><th>Rôle</th></tr>
+      <tr><td><code>InvTweaks.cfg</code></td><td>Interrupteurs et touches (format properties)</td></tr>
+      <tr><td><code>InvTweaksRules.txt</code></td><td>Règles de tri et profils</td></tr>
+      <tr><td><code>InvTweaksTree.txt</code></td><td>Arbre de catégories (contenu XML)</td></tr>
+      <tr><td><code>trees/*.tree</code></td><td>Fragments d'arbre fusionnés au démarrage</td></tr>
+      <tr><td><code>InvTweaksCompatibility.xml</code></td><td>Facultatif : compatibilité des conteneurs</td></tr>
+    </table>
+    <div class="tip">
+      <span class="label">ASTUCE</span>
+      <span class="tipbody">Ouvrez le fichier de règles depuis le jeu : « … » → « Ouvrir le fichier de règles de tri… ». Sauvegardez, revenez et triez une fois.</span>
+    </div>
+
+    <h2 id="rules">Règles de tri (InvTweaksRules.txt)</h2>
+    <p>Chaque ligne est une contrainte composée de deux champs :</p>
+    <pre><code>&lt;cible&gt; &lt;mot-clé&gt;</code></pre>
+    <p>La <strong>cible</strong> est une position de l'inventaire (emplacement, ligne, colonne ou rectangle) ; le <strong>mot-clé</strong> vient de l'arbre d'objets. Par exemple <code>D5 pickaxe</code> place la meilleure pioche dans la 5ᵉ case de la dernière ligne (barre rapide).</p>
+    <p>Le fichier par défaut contient déjà <code>D LOCKED</code>, qui empêche le tri automatique de remplir la barre rapide.</p>
+
+    <h3 id="rules-targets">Zones</h3>
+    <p>L'inventaire se numérote en 9 colonnes et 4 lignes : colonnes <code>1</code> à <code>9</code> de gauche à droite, lignes <code>a</code> à <code>d</code> de haut en bas (<code>d</code> est la barre rapide).</p>
+    <table>
+      <tr><th>Syntaxe</th><th>Signification</th></tr>
+      <tr><td><code>D1</code></td><td>Emplacement unique : ligne D, colonne 1</td></tr>
+      <tr><td><code>D</code></td><td>Ligne entière, de gauche à droite</td></tr>
+      <tr><td><code>1</code></td><td>Colonne entière, de bas en haut par défaut</td></tr>
+      <tr><td><code>A5-C9</code></td><td>Rectangle de A5 à C9</td></tr>
+      <tr><td><code>A1-C3</code></td><td>Rectangle, autre ordre de coins (sens de remplissage différent)</td></tr>
+    </table>
+    <div class="tip">
+      <span class="label">ASTUCE</span>
+      <span class="tipbody">Un rectangle s'écrit <code>A1-C3</code>, <code>C3-A1</code>, <code>A3-C1</code> ou <code>C1-A3</code>. Ces formes ne sont pas équivalentes : le premier coin détermine le point de départ du remplissage.</span>
+    </div>
+
+    <h3 id="rules-modifiers">Modificateurs</h3>
+    <p>À ajouter à la fin de la cible ; ils se combinent :</p>
+    <table>
+      <tr><th>Modificateur</th><th>Signification</th></tr>
+      <tr><td><code>r</code></td><td>Inversé : de droite à gauche ou de haut en bas</td></tr>
+      <tr><td><code>v</code></td><td>Vertical d'abord : haut-bas avant gauche-droite (surtout les rectangles)</td></tr>
+    </table>
+    <p>Par exemple <code>Ar</code> remplit la ligne 1 à l'envers, et <code>A1-C5v</code> remplit un rectangle verticalement d'abord.</p>
+
+    <h3 id="rules-keywords">Mots-clés</h3>
+    <p>Les noms d'objets et de nombreuses catégories s'utilisent directement : <code>pickaxe</code>, <code>edibleFood</code>, <code>blocks</code>, <code>equipment</code>, etc. La liste complète correspond au contenu du fichier d'arbre.</p>
+    <p>La casse et les espaces sont ignorés : <code>woodenSword</code>, <code>WOODSWORD</code> et <code>Wooden Sword</code> sont équivalents.</p>
+
+    <h3 id="rules-locked">Verrouillé et gelé</h3>
+    <table>
+      <tr><th>Syntaxe</th><th>Effet</th></tr>
+      <tr><td><code>&lt;cible&gt; LOCKED</code></td><td>Rien d'autre n'y est placé ; une cible plus précise l'emporte (<code>D LOCKED</code> est remplacé par <code>D1 torch</code>)</td></tr>
+      <tr><td><code>&lt;cible&gt; FROZEN</code></td><td>Les objets de ces cases ne bougent jamais, ni au tri ni au réapprovisionnement</td></tr>
+      <tr><td><code>autorefill &lt;mot-clé&gt;</code></td><td>Ne réapprovisionne que les objets correspondants (tous si omis)</td></tr>
+    </table>
+
+    <h3 id="rules-configs">Profils multiples</h3>
+    <p>Un profil commence par un mot seul suivi de deux-points ; les règles suivantes lui appartiennent :</p>
+    <pre><code>Minage:
+D1 pickaxe
+D2 torch
+
+Combat:
+D1 sword
+D5 edibleFood</code></pre>
+    <p>Maintenez <kbd>R</kbd> environ une seconde pour faire défiler, ou <kbd>1</kbd>–<kbd>9</kbd> + <kbd>R</kbd> pour aller directement à un profil (le premier est 1).</p>
+
+    <h3>Exemple officiel</h3>
+    <p>Les règles utilisées par l'auteur original :</p>
+    <pre><code>Default:
+
+D1 pickaxe
+D2 axe
+D3 shovel
+D4 sword
+D5 edibleFood
+D9 torch
+
+A1-C5v stuff
+A9-C6v blocks</code></pre>
+
+    <h3>Exemple complet</h3>
+    <pre><code># les lignes commençant par # sont des commentaires
+[Default]
+# armes dans la colonne 1
+1 weapon
+# blocs dans la ligne 1
+a block
+# nourriture dans une case
+a1 food
+# verrouille les deux cases en bas à droite
+b8-c9 locked
+# réapprovisionne seulement les outils
+autorefill tool</code></pre>
+    <div class="warn">
+      <span class="label">REMARQUE</span>
+      <span class="tipbody">Les deux styles fonctionnent : <code>Default:</code> (documentation officielle) et <code>[Default]</code> (style section). Gardez un seul style par fichier.</span>
+    </div>
+
+    <h2 id="tree">Arbre d'objets (InvTweaksTree.txt)</h2>
+    <p>L'arbre définit les mots-clés utilisables dans les règles et l'ordre des objets au sein d'une catégorie. L'ordre compte : avec <code>D1 sword</code>, les épées listées en premier sont préférées.</p>
+
+    <h3 id="tree-custom">Structure et catégories personnalisées</h3>
+    <p>Le fichier est du XML avec un élément racine fixe, <code>stuff</code>. Les catégories personnalisées s'imbriquent directement dedans ; le nom de l'élément devient le mot-clé :</p>
+    <pre><code>&lt;stuff treeVersion="1.20.1"&gt;
+  &lt;myCategory&gt;
+    &lt;dirt id="minecraft:dirt"/&gt;
+    &lt;cake id="minecraft:cake"/&gt;
+  &lt;/myCategory&gt;
+&lt;/stuff&gt;</code></pre>
+    <p>Ainsi <code>myCategory</code> ne correspond qu'à la terre et au gâteau. Inutile de retirer un objet de sa catégorie d'origine ; un objet peut figurer dans plusieurs. Placez les nouvelles catégories en haut, juste sous <code>&lt;stuff&gt;</code>.</p>
+
+    <h3 id="tree-damage">ID et variantes</h3>
+    <p>Certains objets nécessitent une valeur de damage pour être distingués :</p>
+    <pre><code>&lt;sexyWools&gt;
+  &lt;magentaWool id="minecraft:wool" damage="2"/&gt;
+  &lt;pinkWool id="minecraft:wool" damage="6"/&gt;
+  &lt;purpleWool id="minecraft:wool" damage="10"/&gt;
+&lt;/sexyWools&gt;</code></pre>
+
+    <h3>Données spéciales</h3>
+    <p>Les potions et objets nommés exigent des données supplémentaires :</p>
+    <pre><code>&lt;specialPotion&gt;
+  &lt;specialPotionA id="minecraft:potion" data='{Potion:"minecraft:strong_healing"}'/&gt;
+&lt;/specialPotion&gt;
+
+&lt;specialPickaxe id="minecraft:diamond_pickaxe"
+  data='{display:{Name:"My Special Pickaxe"}}'/&gt;</code></pre>
+
+    <h3>Attributs</h3>
+    <table>
+      <tr><th>Attribut</th><th>Sur</th><th>Description</th></tr>
+      <tr><td><code>id</code></td><td>Objet</td><td>Nom d'enregistrement, ex. <code>minecraft:stone</code></td></tr>
+      <tr><td><code>damage</code></td><td>Objet</td><td>Valeur de variante, joker par défaut</td></tr>
+      <tr><td><code>dmin</code> / <code>dmax</code></td><td>Catégorie</td><td>Génère des entrées sur une plage de damage</td></tr>
+      <tr><td><code>class</code></td><td>Catégorie</td><td>Correspondance par classe : <code>armor</code>, <code>sword</code>, <code>bow</code>, <code>pickaxe</code>, <code>shovel</code>, <code>axe</code>, <code>hoe</code>, <code>shears</code>, <code>arrow</code>, <code>fishing</code></td></tr>
+      <tr><td><code>data</code></td><td>Catégorie</td><td>Conditions comme <code>data="toolclass:pickaxe"</code>, <code>data="armortype:head"</code> ; séparées par des virgules</td></tr>
+      <tr><td><code>order</code></td><td>Partout</td><td>Ordre entre éléments frères</td></tr>
+      <tr><td><code>mergePrevious</code> / <code>mergeChildren</code></td><td>Partout</td><td>Ordre de fusion avec l'élément précédent / les enfants</td></tr>
+      <tr><td><code>treeVersion</code></td><td>Racine</td><td>Version du jeu visée ; enregistrée seulement. Une sauvegarde est faite lors d'un changement de version</td></tr>
+    </table>
+
+    <h3>Extension et fusion</h3>
+    <p>Placez des fragments dans <code>config/InvTweaks/trees/</code> avec l'extension <code>.tree</code> ; ils sont fusionnés au lancement. Supprimez un fragment cassé pour le reconstruire ; l'ancien fichier est conservé en <code>*.bak</code>.</p>
+    <div class="warn">
+      <span class="label">REMARQUE</span>
+      <span class="tipbody">Un mot-clé mal orthographié rend la ligne de règle correspondante invalide ; le jeu l'indique dans le chat.</span>
+    </div>
+
+    <h2 id="compat">Compatibilité des conteneurs (InvTweaksCompatibility.xml)</h2>
+    <p>Ce fichier n'existe pas par défaut ; créez-le si besoin. Il indique quels conteneurs affichent des boutons :</p>
+    <pre><code>&lt;root&gt;
+  &lt;!-- traité comme un coffre : boutons de tri --&gt;
+  &lt;chest class="mod.container.MyChestContainer" row_size="9" large_chest="false"/&gt;
+  &lt;!-- conteneur simple : bouton de réglages uniquement --&gt;
+  &lt;inventory class="mod.container.MyInventoryContainer" disable_buttons="false"/&gt;
+&lt;/root&gt;</code></pre>
+    <p>Il ne fournit que des informations basiques et ne fonctionne pas avec tous les mods ; si un conteneur se comporte mal, demandez d'abord à son auteur un support API.</p>
+
+    <h2 id="faq">FAQ</h2>
+    <h3>Le chat affiche « Mod can't work because it couldn't find… »</h3>
+    <p>Une ressource de configuration manque dans le jar (souvent un problème de packaging). Supprimez <code>config/InvTweaks/</code> et redémarrez ; une version correcte la recrée.</p>
+    <h3>Appuyer sur R ne fait rien</h3>
+    <p>Vérifiez trois choses : la touche de tri (R par défaut, voir Options → Contrôles) ; l'écran autorise le tri ; le curseur est sur un emplacement, ce qui détermine la zone.</p>
+    <h3>Modificateur + clic gauche sans effet</h3>
+    <p>Vérifiez <code>enableShortcuts=true</code> dans <code>InvTweaks.cfg</code> et que « Raccourcis » est activé dans les réglages. Les touches ne doivent pas entrer en conflit avec celles du jeu.</p>
+    <h3>R + chiffre / maintenir R ne fait rien</h3>
+    <p>Avec un seul profil, il n'y a rien à changer. Ajoutez au moins un profil comme <code>Minage:</code>.</p>
+    <h3>Les modifications de configuration ne s'appliquent pas</h3>
+    <p>Les règles et touches s'appliquent au tri suivant ; redémarrez le client après avoir modifié l'arbre. Si l'arbre a été reconstruit, l'ancien fichier reste en <code>*.bak</code>.</p>
+    <h3>Les objets moddés ne se trient pas comme je veux</h3>
+    <p>Éditez <code>InvTweaksTree.txt</code> et ajoutez les objets par <code>id</code> dans la catégorie voulue. Pour trouver un id, appuyez sur <kbd>F3</kbd> + <kbd>H</kbd> pour activer les infobulles avancées puis survolez l'objet.</p>
+    <h3>Les icônes sont moches avec mon pack de ressources</h3>
+    <p>Les boutons utilisent la texture vanilla par défaut. Ajoutez <code>assets/inventorytweaks/textures/gui/button10px.png</code> à votre pack pour la remplacer.</p>
+  </main>
+
+  <aside class="toc">
+    <h4>Sur cette page</h4>
+    <ul id="tocList">
+      <li><a href="#start">Démarrage rapide</a></li>
+      <li><a href="#install">Installation</a></li>
+      <li><a href="#sorting">Tri de base</a></li>
+      <li><a href="#buttons">Boutons des conteneurs</a></li>
+      <li><a href="#keys">Raccourcis</a></li>
+      <li><a href="#refill">Réapprovisionnement</a></li>
+      <li><a href="#files">Configuration</a></li>
+      <li><a href="#rules">Règles de tri</a></li>
+      <li class="sub"><a href="#rules-targets">Zones</a></li>
+      <li class="sub"><a href="#rules-modifiers">Modificateurs</a></li>
+      <li class="sub"><a href="#rules-keywords">Mots-clés</a></li>
+      <li class="sub"><a href="#rules-locked">Verrouillé et gelé</a></li>
+      <li class="sub"><a href="#rules-configs">Profils</a></li>
+      <li><a href="#tree">Arbre d'objets</a></li>
+      <li class="sub"><a href="#tree-custom">Catégories</a></li>
+      <li class="sub"><a href="#tree-damage">ID et variantes</a></li>
+      <li><a href="#compat">Compatibilité</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="meta">
+      <h4>Code et ressources</h4>
+      <a href="https://github.com/huan25748/Inventory-Tweaks-Remaked" target="_blank" rel="noopener">Dépôt GitHub</a>
+      <a href="https://huan25748.github.io/Inventory-Tweaks-Remaked/" target="_blank" rel="noopener">Documentation en ligne</a>
+      <a href="https://inventory-tweaks.readthedocs.io/en/latest/" target="_blank" rel="noopener">Documentation originale</a>
+      <a href="#top">Haut de page</a>
+      <p style="margin-top:12px">Inventory Tweaks Remaked<br>Basé sur Inventory Tweaks 1.12.2<br>Auteurs originaux Jimeo Wan / kobata</p>
+    </div>
+  </aside>
+</div>
+
+<footer class="footer">
+  Inventory Tweaks Remaked · client uniquement · Fabric / Forge / NeoForge multi-versions
+</footer>
+
+<script>
+(function () {
+  var q = document.getElementById('q');
+  var box = q ? q.parentNode : null;
+  var panel = null;
+  var hits = [];
+  var cursor = -1;
+  var index = [];
+
+  function buildIndex() {
+    index = [];
+    var heads = document.querySelectorAll('.content h2[id], .content h3[id]');
+    for (var i = 0; i < heads.length; i++) {
+      var h = heads[i];
+      var parts = [h.textContent.trim()];
+      var n = h.nextElementSibling;
+      while (n && n.tagName !== 'H2' && n.tagName !== 'H3') {
+        parts.push(n.textContent.replace(/\s+/g, ' ').trim());
+        n = n.nextElementSibling;
+      }
+      index.push({ id: h.id, title: h.textContent.trim(), body: parts.join(' ') });
+    }
+  }
+
+  function esc(s) {
+    return s.replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function mark(text, term) {
+    var i = text.toLowerCase().indexOf(term);
+    if (i < 0) return esc(text.slice(0, 110));
+    var from = Math.max(0, i - 40);
+    var cut = text.slice(from, from + 130);
+    var j = cut.toLowerCase().indexOf(term);
+    if (j < 0) return esc(cut);
+    return (from > 0 ? '…' : '') +
+      esc(cut.slice(0, j)) + '<mark>' + esc(cut.slice(j, j + term.length)) + '</mark>' +
+      esc(cut.slice(j + term.length));
+  }
+
+  function otherLangs(term) {
+    var links = document.querySelectorAll('.langswitch a');
+    var parts = [];
+    for (var i = 0; i < links.length; i++) {
+      var a = links[i];
+      if (!a.classList.contains('active')) {
+        parts.push('<a class="sr-lang" href="' + a.getAttribute('href') + '?q=' + encodeURIComponent(term) + '">' + a.textContent + '</a>');
+      }
+    }
+    return parts.join(' ');
+  }
+
+  function render(term) {
+    if (!panel) return;
+    if (!term) { panel.style.display = 'none'; panel.innerHTML = ''; hits = []; cursor = -1; return; }
+    var lower = term.toLowerCase();
+    hits = index
+      .map(function (e) {
+        var inTitle = e.title.toLowerCase().indexOf(lower) >= 0;
+        var inBody = e.body.toLowerCase().indexOf(lower) >= 0;
+        return { e: e, score: inTitle ? 0 : (inBody ? 1 : 9) };
+      })
+      .filter(function (x) { return x.score < 9; })
+      .sort(function (a, b) { return a.score - b.score; })
+      .slice(0, 8)
+      .map(function (x) { return x.e; });
+
+    if (!hits.length) {
+      panel.innerHTML = '<div class="sr-empty">No results for “' + esc(term) + '”.<br>' +
+        '<span class="sr-langs">Search another language: ' + otherLangs(term) + '</span></div>';
+      panel.style.display = 'block';
+      cursor = -1;
+      return;
+    }
+    panel.innerHTML = hits.map(function (e, i) {
+      return '<a href="#' + e.id + '" data-i="' + i + '" class="' + (i === 0 ? 'active' : '') + '">' +
+        '<span class="sr-title">' + mark(e.title, lower) + '</span>' +
+        '<span class="sr-snippet">' + mark(e.body, lower) + '</span></a>';
+    }).join('');
+    panel.style.display = 'block';
+    cursor = 0;
+  }
+
+  function go(i) {
+    if (!hits[i]) return false;
+    location.hash = hits[i].id;
+    if (panel) panel.style.display = 'none';
+    if (q) q.blur();
+    return true;
+  }
+
+  if (q && box) {
+    panel = document.createElement('div');
+    panel.className = 'search-results';
+    box.appendChild(panel);
+    buildIndex();
+
+    var preset = new URLSearchParams(location.search).get('q');
+    if (preset) { q.value = preset; render(preset); }
+
+    q.addEventListener('input', function () { render(q.value.trim()); });
+    q.addEventListener('focus', function () { if (q.value.trim()) render(q.value.trim()); });
+
+    q.addEventListener('keydown', function (e) {
+      var term = q.value.trim();
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (!hits.length || panel.style.display === 'none' || panel.style.display === '') {
+          render(term);
+        }
+        if (hits.length) go(cursor < 0 ? 0 : cursor);
+        else if (term) render(term);
+        return;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!hits.length) return;
+        cursor = (cursor + 1) % hits.length;
+        panel.querySelectorAll('a[data-i]').forEach(function (a) { a.classList.toggle('active', +a.dataset.i === cursor); });
+        var act = panel.querySelector('a.active');
+        if (act) act.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!hits.length) return;
+        cursor = (cursor - 1 + hits.length) % hits.length;
+        panel.querySelectorAll('a[data-i]').forEach(function (a) { a.classList.toggle('active', +a.dataset.i === cursor); });
+        var act2 = panel.querySelector('a.active');
+        if (act2) act2.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Escape') {
+        panel.style.display = 'none';
+        q.value = '';
+        q.blur();
+      }
+    });
+
+    panel.addEventListener('mousedown', function (e) {
+      var a = e.target.closest && e.target.closest('a[data-i]');
+      if (a) { e.preventDefault(); go(parseInt(a.getAttribute('data-i'), 10)); }
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!box.contains(e.target)) panel.style.display = 'none';
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); q.focus(); }
+    });
+  }
+
+  document.querySelectorAll('.langswitch a').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var base = a.getAttribute('href').split(/[?#]/)[0];
+      var query = q && q.value.trim() ? '?q=' + encodeURIComponent(q.value.trim()) : '';
+      var hash = location.hash ? location.hash : '';
+      a.href = base + query + hash;
+    });
+  });
+
+  var btn = document.getElementById('theme');
+  var root = document.documentElement;
+  if (btn) btn.addEventListener('click', function () {
+    var dark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+  });
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.sidebar a, #tocList a'));
+  var targets = links.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); });
+  function sync() {
+    var y = window.scrollY + 90, best = -1;
+    targets.forEach(function (t, i) { if (t && t.offsetTop <= y) best = i; });
+    links.forEach(function (a, i) { a.classList.toggle('active', i === best); });
+  }
+  window.addEventListener('scroll', sync, { passive: true });
+  sync();
+})();
+</script>
+</body>
+</html>
